@@ -2,10 +2,13 @@ package co.edu.sena.myapplication2687386
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.Telephony.Sms.Conversations
+import android.view.textclassifier.ConversationAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,13 +29,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.remember
 import co.edu.sena.myapplication2687386.ui.theme.MyApplication2687386Theme
+import co.edu.sena.myapplication2687386.ui.theme.MyApplication2687386Theme as MyApplication2687386Theme1
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
- class MainActivity : ComponentActivity() {
+
+class MainActivity : ComponentActivity() {
      override fun onCreate(savedInstanceState: Bundle?) {
          super.onCreate(savedInstanceState)
          setContent {
-             MyApplication2687386Theme {
+             MyApplication2687386Theme1 {
                  Surface (modifier = Modifier.fillMaxSize()) {
                      MessageCard(Message("Android", "Jetpack Compose"))
                  }
@@ -44,7 +60,7 @@ import co.edu.sena.myapplication2687386.ui.theme.MyApplication2687386Theme
 
 
 
- @Composable
+@Composable
  fun MessageCard(msg: Message) {
      Row (modifier = Modifier.padding(all = 8.dp)) {
          Image(
@@ -57,8 +73,10 @@ import co.edu.sena.myapplication2687386.ui.theme.MyApplication2687386Theme
          )
 
          Spacer(modifier = Modifier.width(8.dp))
+         //verificacionestado
+         var isExpanded by remember { mutableStateOf(false) }
 
-         Column {
+         Column (modifier = Modifier.clickable { isExpanded = !isExpanded }) {
              Text(
                  text = msg.author,
                  color = MaterialTheme.colorScheme.secondary,
@@ -71,28 +89,38 @@ import co.edu.sena.myapplication2687386.ui.theme.MyApplication2687386Theme
                  Text(
                      text = msg.body,
                      modifier = Modifier.padding(all = 4.dp),
+                     maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+
                      style = MaterialTheme.typography.bodySmall)
              }
          }
      }
  }
 
- @Preview(name = "Light Mode")
+
+@Preview(name = "Light Mode")
  @Preview(
      uiMode = Configuration.UI_MODE_NIGHT_YES,
      showBackground = true,
      name = "Dark Mode"
  )
- @Composable
- fun PreviewMessageCard() {
-     MyApplication2687386Theme {
-         Surface {
-             MessageCard(
-                 msg = Message("Colleague", "Hey, take a look at Jetpack Compose, it's great!")
-             )
-         }
-     }
- }
+@Composable
+fun Conversation(messages: List<Message>) {
+    LazyColumn {
+        items(messages) { message ->
+            MessageCard(message)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ConversationPreview() {
+       MyApplication2687386Theme(){
+            Conversation(SampleData.conversationSample)
+        }
+    }
+
 
 
 
